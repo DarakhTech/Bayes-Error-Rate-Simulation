@@ -1,0 +1,48 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 30px;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+.slider-group {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+label {
+    display: inline-block;
+    width: 160px;
+    text-align: right;
+    margin-right: 10px;
+}
+
+input[type=range] {
+    width: 200px;
+    margin: 0 10px;
+}
+
+.value {
+    display: inline-block;
+    width: 60px;
+    text-align: left;
+}
+
+canvas {
+    width: 80% !important;
+    height: auto !important;
+    max-width: none;
+    margin: 30px auto;
+    display: block;
+}
+
+#errorRate {
+    margin-top: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+}

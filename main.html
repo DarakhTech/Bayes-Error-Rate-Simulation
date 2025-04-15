@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bayes Error Rate Simulation</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="main.js" defer></script>
+</head>
+<body>
+  <h2>Bayes Error Rate Simulation: Normal vs Gamma</h2>
+
+  <div class="distribution-group">
+    <div class="normal-distribution">
+      <h3>Normal Distribution</h3>
+      <div class="slider-group">
+        <label>μ (Normal Mean):</label>
+        <input type="range" id="mu" min="0" max="6" step="0.1" value="2">
+        <span class="value" id="mu_val">2.0</span>
+      </div>
+      <div class="slider-group">
+        <label>σ (Normal Std Dev):</label>
+        <input type="range" id="sigma" min="0.2" max="3" step="0.1" value="1">
+        <span class="value" id="sigma_val">1.0</span>
+      </div>
+    </div>
+
+    <div class="gamma-distribution">
+      <h3>Gamma Distribution</h3>
+      <div class="slider-group">
+        <label>α (Gamma Shape):</label>
+        <input type="range" id="alpha" min="0.5" max="10" step="0.1" value="2">
+        <span class="value" id="alpha_val">2.0</span>
+      </div>
+      <div class="slider-group">
+        <label>β (Gamma Rate):</label>
+        <input type="range" id="beta" min="0.2" max="5" step="0.1" value="1">
+        <span class="value" id="beta_val">1.0</span>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="bayesChart" height="300"></canvas>
+  <h3 id="errorRate">Bayes Error Rate: --</h3>
+</body>
+</html>
