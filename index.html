@@ -4,16 +4,37 @@
   <meta charset="UTF-8">
   <title>Bayes Error Rate Simulation</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script> -->
+   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <script src="main.js" defer></script>
 </head>
 <body>
   <h2>Bayes Error Rate Simulation: Normal vs Gamma</h2>
 
+  <div class="distribution-selector">
+    <label for="dist1">Distribution 1:</label>
+    <select id="dist1">
+      <option value="normal">Normal</option>
+      <option value="gamma">Gamma</option>
+      <option value="beta">Beta</option>
+      <option value="pareto">Pareto</option>
+      <option value="exponential">Exponential</option>
+    </select>
+
+    <label for="dist2">Distribution 2:</label>
+    <select id="dist2">
+      <option value="normal">Normal</option>
+      <option value="gamma">Gamma</option>
+      <option value="beta">Beta</option>
+      <option value="pareto">Pareto</option>
+      <option value="exponential">Exponential</option>
+    </select>
+  </div>
+
   <div class="distribution-group">
-    <div class="normal-distribution">
-      <h3>Normal Distribution</h3>
+    <div id="dist1-params" class="dynamic-params">
       <div class="slider-group">
         <label>μ (Normal Mean):</label>
         <input type="range" id="mu" min="0" max="6" step="0.1" value="2">
@@ -26,8 +47,7 @@
       </div>
     </div>
 
-    <div class="gamma-distribution">
-      <h3>Gamma Distribution</h3>
+    <div id="dist2-params" class="dynamic-params">
       <div class="slider-group">
         <label>α (Gamma Shape):</label>
         <input type="range" id="alpha" min="0.5" max="10" step="0.1" value="2">
