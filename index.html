@@ -2,66 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Bayes Error Rate Simulation</title>
+  <title>Distribution Simulator</title>
+  <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script> -->
-   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-    <script src="main.js" defer></script>
 </head>
 <body>
-  <h2>Bayes Error Rate Simulation: Normal vs Gamma</h2>
+  <div class="column">
+    <h3>Distribution 1</h3>
+    <label>Type of Distribution:</label>
+    <select id="type1" onchange="updateDistributionList(1)">
+      <option value="continuous">Continuous</option>
+      <option value="discrete">Discrete</option>
+    </select><br><br>
 
-  <div class="distribution-selector">
-    <label for="dist1">Distribution 1:</label>
-    <select id="dist1">
-      <option value="normal">Normal</option>
-      <option value="gamma">Gamma</option>
-      <option value="beta">Beta</option>
-      <option value="pareto">Pareto</option>
-      <option value="exponential">Exponential</option>
-    </select>
+    <label>Distribution Want to Display:</label>
+    <select id="dist1" onchange="updateParameters(1)"></select><br><br>
 
-    <label for="dist2">Distribution 2:</label>
-    <select id="dist2">
-      <option value="normal">Normal</option>
-      <option value="gamma">Gamma</option>
-      <option value="beta">Beta</option>
-      <option value="pareto">Pareto</option>
-      <option value="exponential">Exponential</option>
-    </select>
+    <div id="params1"></div>
+    <div id="formula1" class="formula"></div>
   </div>
 
-  <div class="distribution-group">
-    <div id="dist1-params" class="dynamic-params">
-      <div class="slider-group">
-        <label>μ (Normal Mean):</label>
-        <input type="range" id="mu" min="0" max="6" step="0.1" value="2">
-        <span class="value" id="mu_val">2.0</span>
-      </div>
-      <div class="slider-group">
-        <label>σ (Normal Std Dev):</label>
-        <input type="range" id="sigma" min="0.2" max="3" step="0.1" value="1">
-        <span class="value" id="sigma_val">1.0</span>
-      </div>
+  <div class="center-column">
+    <div>
+      <h3>PDF/PMF Distribution</h3>
+      <canvas id="pdfCanvas"></canvas>
     </div>
-
-    <div id="dist2-params" class="dynamic-params">
-      <div class="slider-group">
-        <label>α (Gamma Shape):</label>
-        <input type="range" id="alpha" min="0.5" max="10" step="0.1" value="2">
-        <span class="value" id="alpha_val">2.0</span>
-      </div>
-      <div class="slider-group">
-        <label>β (Gamma Rate):</label>
-        <input type="range" id="beta" min="0.2" max="5" step="0.1" value="1">
-        <span class="value" id="beta_val">1.0</span>
-      </div>
+    <div>
+      <h3>CDF Distribution</h3>
+      <canvas id="cdfCanvas"></canvas>
     </div>
   </div>
 
-  <canvas id="bayesChart" height="300"></canvas>
-  <h3 id="errorRate">Bayes Error Rate: --</h3>
+  <div class="column">
+    <h3>Distribution 2</h3>
+    <label>Type of Distribution:</label>
+    <select id="type2" onchange="updateDistributionList(2)">
+      <option value="continuous">Continuous</option>
+      <option value="discrete">Discrete</option>
+    </select><br><br>
+
+    <label>Distribution Want to Display:</label>
+    <select id="dist2" onchange="updateParameters(2)"></select><br><br>
+
+    <div id="params2"></div>
+    <div id="formula2" class="formula"></div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
