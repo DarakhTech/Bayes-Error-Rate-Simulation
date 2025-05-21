@@ -20,11 +20,11 @@ const parameterConfigs = {
 };
 
 const formulas = {
-  Normal: "f(x) = (1/\u03c3\u221a(2\u03c0)) * exp(-0.5((x-\u03bc)/\u03c3)^2)",
-  Exponential: "f(x) = \u03bb * exp(-\u03bbx), x \u2265 0",
-  Gamma: "f(x) = (\u03b2^\u03b1 x^{\u03b1-1} e^{-\u03b2x}) / \u0393(\u03b1)",
-  Beta: "f(x) = x^{\u03b1-1} (1-x)^{\u03b2-1} / B(\u03b1,\u03b2)",
-  Uniform: "f(x) = 1 / (b - a), a \u2264 x \u2264 b"
+  Normal: "f(x) = \\frac{1}{\\sigma \\sqrt{2\\pi}} \\exp\\left(-\\frac{1}{2} \\left(\\frac{x-\\mu}{\\sigma}\\right)^2\\right)",
+  Exponential: "f(x) = \\lambda \\exp(-\\lambda x),\\quad x \\geq 0",
+  Gamma: "f(x) = \\frac{\\beta^{\\alpha} x^{\\alpha-1} e^{-\\beta x}}{\\Gamma(\\alpha)}",
+  Beta: "f(x) = \\frac{x^{\\alpha-1}(1-x)^{\\beta-1}}{B(\\alpha,\\beta)}",
+  Uniform: "f(x) = \\frac{1}{b-a},\\quad a \\leq x \\leq b"
 };
 
 let pdfChart, cdfChart;
@@ -93,7 +93,7 @@ function updateParameters(index) {
 
   const formulaDiv = document.getElementById(`formula${index}`);
   if (formulas[dist]) {
-    formulaDiv.innerHTML = `<span class="math-formula">${formulas[dist]}</span>`;
+    formulaDiv.innerHTML = `<span class=\"math-formula\">$$${formulas[dist]}$$</span>`;
     if (window.MathJax && window.MathJax.typeset) {
       MathJax.typeset([formulaDiv]);
     }
