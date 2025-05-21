@@ -597,15 +597,24 @@ function drawGraphs() {
   };
   if (!pdfChart) {
     pdfChart = new Chart(pdfCanvas.getContext("2d"), {
-      type: 'bar', // Chart.js will use dataset type for each dataset
+      type: 'bar',
       data: pdfData,
       options: pdfOptions
     });
   } else {
-    pdfChart.data.labels = x;
-    pdfChart.data.datasets = pdfDatasets;
-    pdfChart.options.animation = { duration: 1000, easing: 'easeOutQuart' };
-    pdfChart.update();
+    // Update labels in place
+    pdfChart.data.labels.length = 0;
+    pdfChart.data.labels.push(...x);
+    // Update datasets in place
+    pdfDatasets.forEach((newDs, i) => {
+      if (pdfChart.data.datasets[i]) {
+        Object.assign(pdfChart.data.datasets[i], newDs);
+      } else {
+        pdfChart.data.datasets.push({...newDs});
+      }
+    });
+    pdfChart.data.datasets.length = pdfDatasets.length;
+    pdfChart.update('active'); // Use 'active' mode for smooth transitions
   }
 
   // CDF Chart (always line, stepped for discrete)
@@ -659,10 +668,19 @@ function drawGraphs() {
       options: cdfOptions
     });
   } else {
-    cdfChart.data.labels = x;
-    cdfChart.data.datasets = cdfData.datasets;
-    cdfChart.options.animation = { duration: 1000, easing: 'easeOutQuart' };
-    cdfChart.update();
+    // Update labels in place
+    cdfChart.data.labels.length = 0;
+    cdfChart.data.labels.push(...x);
+    // Update datasets in place
+    cdfData.datasets.forEach((newDs, i) => {
+      if (cdfChart.data.datasets[i]) {
+        Object.assign(cdfChart.data.datasets[i], newDs);
+      } else {
+        cdfChart.data.datasets.push({...newDs});
+      }
+    });
+    cdfChart.data.datasets.length = cdfData.datasets.length;
+    cdfChart.update('active'); // Use 'active' mode for smooth transitions
   }
 }
 
