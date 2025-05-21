@@ -1,4 +1,3 @@
-// script.js
 const distributions = {
   continuous: ["Uniform", "Normal", "Gamma", "Exponential", "Pareto", "Beta"],
   discrete: ["Uniform", "Bernoulli", "Binomial", "Hypergeometric", "Geometric", "Negative Binomial", "Poisson"]
@@ -202,6 +201,53 @@ function combination(n, k) {
   return res;
 }
 
+// Toast notification system
+function showToast(message, duration = 3000) {
+  let toast = document.getElementById('toast-message');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast-message';
+    toast.style.position = 'fixed';
+    toast.style.bottom = '30px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.background = 'rgba(220, 53, 69, 0.95)';
+    toast.style.color = 'white';
+    toast.style.padding = '14px 32px';
+    toast.style.borderRadius = '8px';
+    toast.style.fontSize = '1.1em';
+    toast.style.zIndex = 9999;
+    toast.style.boxShadow = '0 2px 12px rgba(0,0,0,0.15)';
+    toast.style.transition = 'opacity 0.4s';
+    toast.style.opacity = '0';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.style.opacity = '1';
+  setTimeout(() => { toast.style.opacity = '0'; }, duration);
+}
+
+function resetParamsToDefault(dist, idx) {
+  const params = parameterConfigs[dist];
+  params.forEach(param => {
+    let value = 1;
+    if (["n", "N", "K", "r"].includes(param)) value = 10;
+    if (["a", "b", "xm", "mu", "alpha", "beta", "sigma", "lambda"].includes(param)) value = 1;
+    if (["p"].includes(param)) value = 0.5;
+    if ((dist === "Beta" || dist === "Gamma") && (param === "alpha" || param === "beta")) value = 2;
+    if (dist === "Uniform" && param === "a") value = 0;
+    if (dist === "Uniform" && param === "b") value = 10;
+    const el = document.getElementById(`param_${param}${idx}`);
+    if (el) {
+      el.value = value;
+      // Update the valueSpan next to the slider
+      if (el.nextSibling && el.nextSibling.tagName === 'SPAN') {
+        el.nextSibling.textContent = value;
+      }
+    }
+  });
+}
+
 function drawGraphs() {
   // Get both distributions and their types
   const dist1 = document.getElementById("dist1").value;
@@ -211,76 +257,66 @@ function drawGraphs() {
   const param1 = id => parseFloat(document.getElementById(`param_${id}1`)?.value || 1);
   const param2 = id => parseFloat(document.getElementById(`param_${id}2`)?.value || 1);
 
-  // Error handling for invalid parameters
   let errorMsg = '';
+  let reset1 = false, reset2 = false;
   // Uniform: a < b
-  if (dist1 === 'Uniform' && param1('a') >= param1('b')) errorMsg += 'Distribution 1: a must be less than b.\n';
-  if (dist2 === 'Uniform' && param2('a') >= param2('b')) errorMsg += 'Distribution 2: a must be less than b.\n';
+  if (dist1 === 'Uniform' && param1('a') >= param1('b')) { errorMsg += 'Distribution 1: a must be less than b.\n'; reset1 = true; }
+  if (dist2 === 'Uniform' && param2('a') >= param2('b')) { errorMsg += 'Distribution 2: a must be less than b.\n'; reset2 = true; }
   // Sigma, lambda, xm, alpha, beta > 0
-  if (dist1 === 'Normal' && param1('sigma') <= 0) errorMsg += 'Distribution 1: sigma must be > 0.\n';
-  if (dist2 === 'Normal' && param2('sigma') <= 0) errorMsg += 'Distribution 2: sigma must be > 0.\n';
-  if (dist1 === 'Exponential' && param1('lambda') <= 0) errorMsg += 'Distribution 1: lambda must be > 0.\n';
-  if (dist2 === 'Exponential' && param2('lambda') <= 0) errorMsg += 'Distribution 2: lambda must be > 0.\n';
-  if (dist1 === 'Pareto' && (param1('xm') <= 0 || param1('alpha') <= 0)) errorMsg += 'Distribution 1: xm and alpha must be > 0.\n';
-  if (dist2 === 'Pareto' && (param2('xm') <= 0 || param2('alpha') <= 0)) errorMsg += 'Distribution 2: xm and alpha must be > 0.\n';
-  if (dist1 === 'Gamma' && (param1('alpha') <= 0 || param1('beta') <= 0)) errorMsg += 'Distribution 1: alpha and beta must be > 0.\n';
-  if (dist2 === 'Gamma' && (param2('alpha') <= 0 || param2('beta') <= 0)) errorMsg += 'Distribution 2: alpha and beta must be > 0.\n';
-  if (dist1 === 'Beta' && (param1('alpha') <= 0 || param1('beta') <= 0)) errorMsg += 'Distribution 1: alpha and beta must be > 0.\n';
-  if (dist2 === 'Beta' && (param2('alpha') <= 0 || param2('beta') <= 0)) errorMsg += 'Distribution 2: alpha and beta must be > 0.\n';
+  if (dist1 === 'Normal' && param1('sigma') <= 0) { errorMsg += 'Distribution 1: sigma must be > 0.\n'; reset1 = true; }
+  if (dist2 === 'Normal' && param2('sigma') <= 0) { errorMsg += 'Distribution 2: sigma must be > 0.\n'; reset2 = true; }
+  if (dist1 === 'Exponential' && param1('lambda') <= 0) { errorMsg += 'Distribution 1: lambda must be > 0.\n'; reset1 = true; }
+  if (dist2 === 'Exponential' && param2('lambda') <= 0) { errorMsg += 'Distribution 2: lambda must be > 0.\n'; reset2 = true; }
+  if (dist1 === 'Pareto' && (param1('xm') <= 0 || param1('alpha') <= 0)) { errorMsg += 'Distribution 1: xm and alpha must be > 0.\n'; reset1 = true; }
+  if (dist2 === 'Pareto' && (param2('xm') <= 0 || param2('alpha') <= 0)) { errorMsg += 'Distribution 2: xm and alpha must be > 0.\n'; reset2 = true; }
+  if (dist1 === 'Gamma' && (param1('alpha') <= 0 || param1('beta') <= 0)) { errorMsg += 'Distribution 1: alpha and beta must be > 0.\n'; reset1 = true; }
+  if (dist2 === 'Gamma' && (param2('alpha') <= 0 || param2('beta') <= 0)) { errorMsg += 'Distribution 2: alpha and beta must be > 0.\n'; reset2 = true; }
+  if (dist1 === 'Beta' && (param1('alpha') <= 0 || param1('beta') <= 0)) { errorMsg += 'Distribution 1: alpha and beta must be > 0.\n'; reset1 = true; }
+  if (dist2 === 'Beta' && (param2('alpha') <= 0 || param2('beta') <= 0)) { errorMsg += 'Distribution 2: alpha and beta must be > 0.\n'; reset2 = true; }
   // Discrete: n, N, K, r, etc. should be integer and > 0
-  if (dist1 === 'Binomial' && param1('n') < 1) errorMsg += 'Distribution 1: n must be >= 1.\n';
-  if (dist2 === 'Binomial' && param2('n') < 1) errorMsg += 'Distribution 2: n must be >= 1.\n';
-  if (dist1 === 'Negative Binomial' && param1('r') < 1) errorMsg += 'Distribution 1: r must be >= 1.\n';
-  if (dist2 === 'Negative Binomial' && param2('r') < 1) errorMsg += 'Distribution 2: r must be >= 1.\n';
-  if (dist1 === 'Hypergeometric' && (param1('N') < 1 || param1('K') < 1 || param1('n') < 1)) errorMsg += 'Distribution 1: N, K, n must be >= 1.\n';
-  if (dist2 === 'Hypergeometric' && (param2('N') < 1 || param2('K') < 1 || param2('n') < 1)) errorMsg += 'Distribution 2: N, K, n must be >= 1.\n';
-  // Additional parameter validation
+  if (dist1 === 'Binomial' && param1('n') < 1) { errorMsg += 'Distribution 1: n must be >= 1.\n'; reset1 = true; }
+  if (dist2 === 'Binomial' && param2('n') < 1) { errorMsg += 'Distribution 2: n must be >= 1.\n'; reset2 = true; }
+  if (dist1 === 'Negative Binomial' && param1('r') < 1) { errorMsg += 'Distribution 1: r must be >= 1.\n'; reset1 = true; }
+  if (dist2 === 'Negative Binomial' && param2('r') < 1) { errorMsg += 'Distribution 2: r must be >= 1.\n'; reset2 = true; }
+  if (dist1 === 'Hypergeometric' && (param1('N') < 1 || param1('K') < 1 || param1('n') < 1)) { errorMsg += 'Distribution 1: N, K, n must be >= 1.\n'; reset1 = true; }
+  if (dist2 === 'Hypergeometric' && (param2('N') < 1 || param2('K') < 1 || param2('n') < 1)) { errorMsg += 'Distribution 2: N, K, n must be >= 1.\n'; reset2 = true; }
   // Probabilities (p) for Bernoulli, Binomial, Geometric, Negative Binomial: 0 < p <= 1
   function isProb(p) { return typeof p === 'number' && p > 0 && p <= 1; }
-  // Poisson: lambda > 0
-  if (dist1 === 'Poisson' && param1('lambda') <= 0) errorMsg += 'Distribution 1: lambda must be > 0.\n';
-  if (dist2 === 'Poisson' && param2('lambda') <= 0) errorMsg += 'Distribution 2: lambda must be > 0.\n';
-  // Bernoulli
-  if (dist1 === 'Bernoulli' && !isProb(param1('p'))) errorMsg += 'Distribution 1: p must be in (0, 1].\n';
-  if (dist2 === 'Bernoulli' && !isProb(param2('p'))) errorMsg += 'Distribution 2: p must be in (0, 1].\n';
-  // Binomial
-  if (dist1 === 'Binomial' && !isProb(param1('p'))) errorMsg += 'Distribution 1: p must be in (0, 1].\n';
-  if (dist2 === 'Binomial' && !isProb(param2('p'))) errorMsg += 'Distribution 2: p must be in (0, 1].\n';
-  // Geometric
-  if (dist1 === 'Geometric' && !isProb(param1('p'))) errorMsg += 'Distribution 1: p must be in (0, 1].\n';
-  if (dist2 === 'Geometric' && !isProb(param2('p'))) errorMsg += 'Distribution 2: p must be in (0, 1].\n';
-  // Negative Binomial
-  if (dist1 === 'Negative Binomial' && !isProb(param1('p'))) errorMsg += 'Distribution 1: p must be in (0, 1].\n';
-  if (dist2 === 'Negative Binomial' && !isProb(param2('p'))) errorMsg += 'Distribution 2: p must be in (0, 1].\n';
+  if (dist1 === 'Poisson' && param1('lambda') <= 0) { errorMsg += 'Distribution 1: lambda must be > 0.\n'; reset1 = true; }
+  if (dist2 === 'Poisson' && param2('lambda') <= 0) { errorMsg += 'Distribution 2: lambda must be > 0.\n'; reset2 = true; }
+  if (dist1 === 'Bernoulli' && !isProb(param1('p'))) { errorMsg += 'Distribution 1: p must be in (0, 1].\n'; reset1 = true; }
+  if (dist2 === 'Bernoulli' && !isProb(param2('p'))) { errorMsg += 'Distribution 2: p must be in (0, 1].\n'; reset2 = true; }
+  if (dist1 === 'Binomial' && !isProb(param1('p'))) { errorMsg += 'Distribution 1: p must be in (0, 1].\n'; reset1 = true; }
+  if (dist2 === 'Binomial' && !isProb(param2('p'))) { errorMsg += 'Distribution 2: p must be in (0, 1].\n'; reset2 = true; }
+  if (dist1 === 'Geometric' && !isProb(param1('p'))) { errorMsg += 'Distribution 1: p must be in (0, 1].\n'; reset1 = true; }
+  if (dist2 === 'Geometric' && !isProb(param2('p'))) { errorMsg += 'Distribution 2: p must be in (0, 1].\n'; reset2 = true; }
+  if (dist1 === 'Negative Binomial' && !isProb(param1('p'))) { errorMsg += 'Distribution 1: p must be in (0, 1].\n'; reset1 = true; }
+  if (dist2 === 'Negative Binomial' && !isProb(param2('p'))) { errorMsg += 'Distribution 2: p must be in (0, 1].\n'; reset2 = true; }
   // Uniform (discrete): a < b
-  if (dist1 === 'Uniform' && param1('a') >= param1('b')) errorMsg += 'Distribution 1: a must be less than b.\n';
-  if (dist2 === 'Uniform' && param2('a') >= param2('b')) errorMsg += 'Distribution 2: a must be less than b.\n';
+  if (dist1 === 'Uniform' && param1('a') >= param1('b')) { errorMsg += 'Distribution 1: a must be less than b.\n'; reset1 = true; }
+  if (dist2 === 'Uniform' && param2('a') >= param2('b')) { errorMsg += 'Distribution 2: a must be less than b.\n'; reset2 = true; }
   // All parameter values must be numbers (not NaN)
   function checkNaN(dist, param, idx) {
     const params = parameterConfigs[dist];
     if (!params) return '';
     for (let i = 0; i < params.length; i++) {
       const v = param(params[i]);
-      if (isNaN(v)) return `Distribution ${idx}: parameter ${params[i]} is not a number.\n`;
+      if (isNaN(v)) {
+        if (idx === 1) reset1 = true;
+        if (idx === 2) reset2 = true;
+        return `Distribution ${idx}: parameter ${params[i]} is not a number.\n`;
+      }
     }
     return '';
   }
   errorMsg += checkNaN(dist1, param1, 1);
   errorMsg += checkNaN(dist2, param2, 2);
-  // Show error and skip plotting if any
-  let errorDiv = document.getElementById('error-message');
-  if (!errorDiv) {
-    errorDiv = document.createElement('div');
-    errorDiv.id = 'error-message';
-    errorDiv.style.color = 'red';
-    errorDiv.style.fontWeight = 'bold';
-    errorDiv.style.margin = '10px 0';
-    document.body.insertBefore(errorDiv, document.body.firstChild);
-  }
-  errorDiv.textContent = errorMsg;
   if (errorMsg) {
-    if (pdfChart) pdfChart.destroy();
-    if (cdfChart) cdfChart.destroy();
+    if (reset1) resetParamsToDefault(dist1, 1);
+    if (reset2) resetParamsToDefault(dist2, 2);
+    showToast(errorMsg);
+    // After resetting, re-plot with defaults
+    setTimeout(drawGraphs, 100);
     return;
   }
 
